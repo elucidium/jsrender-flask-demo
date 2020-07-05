@@ -28,7 +28,7 @@ Upon opening <http://127.0.0.1:5000/>, the following page is displayed.
 
  ## Main takeaways
 
- JsRender templates can be loaded into a script by passing JSON objects between Flask and Javascript's Fetch API. Consider the following two code excerpts (from `app.py` and `static/js/script.js` respectively).
+ JsRender templates can be loaded into a script by passing JSON objects between Flask and Javascript's Fetch API. Consider the following two code excerpts (from [`app.py`](app.py) and [`static/js/script.js`](static/js/script.js) respectively).
 
  ```python
  @app.route('/get-template/<id>')
@@ -80,7 +80,7 @@ loaded content-element and set HTML of #contents (script.js:19:21)
 
 ## Implementation
 
-Refer to the code (in particular `app.py` and `static/js/script.js`) for extensive explanatory comments.
+Refer to the code (in particular [`app.py`](app.py) and [`static/js/script.js`](static/js/script.js)) for extensive explanatory comments.
 
 ## Sources
 
