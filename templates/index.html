@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="author" content="Ruiran Xun (https://github.com/elucidium)">
+    <title>JsRender Flask Demo</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!--jQuery must be included before Bootstrap JS-->
+    <script type="text/javascript"
+         src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script type="text/javascript"
+         src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+         <script type="text/javascript"
+         src="{{ url_for('static', filename='js/jsrender.min.js') }}"></script>
+    <script type="text/javascript"
+         src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    <!--Elements are added to this container from script.js using JsRender.-->
+    <div class="container" id="result"></div>
+</body>
+
+</html>
