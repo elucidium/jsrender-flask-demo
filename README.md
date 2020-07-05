@@ -81,3 +81,10 @@ loaded content-element and set HTML of #contents (script.js:19:21)
 ## Implementation
 
 Refer to the code (in particular `app.py` and `static/js/script.js`) for extensive explanatory comments.
+
+## Sources
+
+I'm very new to working with Flask, in particular communicating information between two different program languages using JSON, so the following two repositories were very helpful for me while figuring out this solution.
+
+- [python-flask-with-javascript](https://github.com/jitsejan/python-flask-with-javascript)
+- [talking-between-python-and-js](https://github.com/healeycodes/talking-between-python-and-js)
