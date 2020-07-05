@@ -22,11 +22,11 @@ Upon opening <http://127.0.0.1:5000/>, the following page is displayed.
  This is a short project to demonstrate the integration of [JsRender templates](https://www.jsviews.com/) with Flask. There were a few key challenges along the way.
 
  1. **JsRender templates are difficult to separate from the base HTML file** without [dealing with Node.js and npm](https://www.jsviews.com/#search?s=load%20templates&l=node/browserify), but lend greater flexibility than Jinja templates.
- 2. If JsRender templates are kept at the bottom of an HTML file, **Jinja doesn't deal well with JsRender syntax** for template variables (i.e. the usage of `{{:variable}}` in JsRender templates vs. `{{variable}}` in Jinja)<sup>1</sup>. Jinja can't be avoided completely because the first page to be loaded by Flask has to be a Jinja template (even if it has no Jinja variables, as is the case with this demo).
+ 2. If JsRender templates are kept at the bottom of an HTML file, **Jinja doesn't deal well with JsRender syntax** for template variables (i.e. the usage of `{{:variable}}` in JsRender templates vs. `{{variable}}` in Jinja).<sup>1</sup> Jinja can't be avoided completely because the first page to be loaded by Flask has to be a Jinja template (even if it has no Jinja variables, as is the case with this demo).
  3. **It's much easier to read local files with Python than with Javascript**, so we can request the templates from a JS script using a GET call.
  4. GET calls are asynchronous, and sometimes JsRender templates can depend on each other, so **they need to load in a specific order**.
 
-<sup>[1] [Delimiters can be modified](https://www.jsviews.com/#settings/delimiters), but separating templates from the base file is useful anyways for the sake of modularity.</sup>
+<sup>[1] It's worth noting that [delimiters can be modified](https://www.jsviews.com/#settings/delimiters), but separating templates from the base file is useful anyways for the sake of modularity.</sup>
 
  ## Main takeaways
 
