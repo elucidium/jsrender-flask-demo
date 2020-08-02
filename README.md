@@ -61,7 +61,8 @@ function html_template(id, selector, data) {
 ```
 This calls the Fetch API, parses the response into a JSON object, then extracts the template string. This string is subsequently converted into a template and rendered on the `data` passed in, after which the HTML element selected by `selector` is set to contain the output.
 
-The code that renders the entire page is as follows. (`prepend_template` and `append_template` are very similar to `html_template` as seen above, except they manipulate the output using `$(selector).prepend(output);` and `$(selector).append(output);` respectively.)
+### Enforcing render order
+**If templates depend upon each other, the order in which they load on the page can be enforced using `async`/`await`.** The code that renders the entire page is as follows. (`prepend_template` and `append_template` are very similar to `html_template` as seen above, except they manipulate the output using `$(selector).prepend(output);` and `$(selector).append(output);` respectively.)
 
 #### [`static/js/script.js`](static/js/script.js)
 ```javascript
