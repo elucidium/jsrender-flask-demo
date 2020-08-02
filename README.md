@@ -21,15 +21,19 @@ Upon opening <http://127.0.0.1:5000/>, the following page is displayed.
 
  This is a short project to demonstrate the integration of [JsRender templates](https://www.jsviews.com/) with Flask. There were a few key challenges along the way.
 
- 1. **JsRender templates are difficult to separate from the base HTML file** without dealing with Node.js and npm, but lend greater flexibility than Jinja templates.
- 2. If JsRender templates are kept at the bottom of an HTML file, **Jinja doesn't deal well with JsRender syntax** for template variables (i.e. the usage of `{{:variable}}` in JsRender templates vs. `{{variable}}` in Jinja). Jinja can't be avoided completely, because the first page to be loaded by Flask has to be a Jinja template (even if it has no Jinja variables, as is the case with this demo).
+ 1. **JsRender templates are difficult to separate from the base HTML file** without [dealing with Node.js and npm](https://www.jsviews.com/#search?s=load%20templates&l=node/browserify), but lend greater flexibility than Jinja templates.
+ 2. If JsRender templates are kept at the bottom of an HTML file, **Jinja doesn't deal well with JsRender syntax** for template variables (i.e. the usage of `{{:variable}}` in JsRender templates vs. `{{variable}}` in Jinja).<sup>1</sup> Jinja can't be avoided completely because the first page to be loaded by Flask has to be a Jinja template (even if it has no Jinja variables, as is the case with this demo).
  3. **It's much easier to read local files with Python than with Javascript**, so we can request the templates from a JS script using a GET call.
  4. GET calls are asynchronous, and sometimes JsRender templates can depend on each other, so **they need to load in a specific order**.
 
+<sup>[1] It's worth noting that [delimiters can be modified](https://www.jsviews.com/#settings/delimiters), but separating templates from the base file is useful anyways for the sake of modularity.</sup>
+
  ## Main takeaways
 
- JsRender templates can be loaded into a script by passing JSON objects between Flask and Javascript's Fetch API. Consider the following two code excerpts (from [`app.py`](app.py) and [`static/js/script.js`](static/js/script.js) respectively).
+### Loading templates
+ **JsRender templates can be loaded into a script by passing JSON objects between Flask and Javascript's Fetch API.** Consider the following two code excerpts.
 
+#### [`app.py`](app.py)
  ```python
  @app.route('/get-template/<id>')
 def get_template(id):
@@ -38,6 +42,7 @@ def get_template(id):
 ```
 This returns a `Promise` that, when `resolve`d, reads a JsRender template from the `templates` directory, wraps the resulting string in a JSON object, and returns the object.
 
+#### [`static/js/script.js`](static/js/script.js)
 ```javascript
 function html_template(id, selector, data) {
     return new Promise(resolve => {
@@ -54,9 +59,11 @@ function html_template(id, selector, data) {
     });
 }
 ```
-This calls the Fetch API, parses the response into a JSON object, then extracts the template string. This string is subsequently converted into a template, rendered on the `data` passed in, and sets the HTML element selected by `selector` to contain the output.
+This calls the Fetch API, parses the response into a JSON object, then extracts the template string. This string is subsequently converted into a template and rendered on the `data` passed in, after which the HTML element selected by `selector` is set to contain the output.
 
 The code that renders the entire page is as follows. (`prepend_template` and `append_template` are very similar to `html_template` as seen above, except they manipulate the output using `$(selector).prepend(output);` and `$(selector).append(output);` respectively.)
+
+#### [`static/js/script.js`](static/js/script.js)
 ```javascript
 async function show_page() {
     // ...
