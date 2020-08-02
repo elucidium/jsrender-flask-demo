@@ -36,11 +36,12 @@ def get_template(id):
     with open('templates/' + id + '.html', 'r') as tmpl_file:
         return jsonify({'template': tmpl_file.read()})
 ```
-This reads a JsRender template from the `templates` directory, wraps the resulting string in a JSON object, and returns the object.
+This returns a `Promise` that, when `resolve`d, reads a JsRender template from the `templates` directory, wraps the resulting string in a JSON object, and returns the object.
 
 ```javascript
-function html_template(id, selector, data, continuation) {
-    fetch('/get-template/' + id)
+function html_template(id, selector, data) {
+    return new Promise(resolve => {
+        fetch('/get-template/' + id)
         .then(function (response) {
             return response.json();
         }).then(function (json) {
@@ -48,26 +49,27 @@ function html_template(id, selector, data, continuation) {
             var output = template.render(data);
             $(selector).html(output);
             console.log("loaded " + id + " and set HTML of " + selector);
-        }).then(continuation);
+            resolve();
+        });
+    });
 }
 ```
 This calls the Fetch API, parses the response into a JSON object, then extracts the template string. This string is subsequently converted into a template, rendered on the `data` passed in, and sets the HTML element selected by `selector` to contain the output.
 
-**The optional `continuation` parameter is used when certain template renders have to occur in order.** In the context of this demo, the middle row is loaded first into the HTML of the container with ID `#result`. The top row is then prepended and the bottom row appended to the container, and finally the three `<p>`s in the middle row are added to the row's `#contents`.
-
 The code that renders the entire page is as follows. (`prepend_template` and `append_template` are very similar to `html_template` as seen above, except they manipulate the output using `$(selector).prepend(output);` and `$(selector).append(output);` respectively.)
 ```javascript
-// data arguments previously initialized
-html_template("flexible-row", "#result", html_flexible_row_data, () => {
-    prepend_template("default-row", "#result", prepend_row_data, () => {
-        append_template("default-row", "#result", append_row_data, () => {
-            // this call has no continuation, since it's the last in the chain
-            html_template("content-element", "#contents", flexible_row_contents);
-        });
-    });
-});
+async function show_page() {
+    // ...
+    // data arguments previously initialized
+    await html_template("flexible-row", "#result", html_flexible_row_data);
+    await prepend_template("default-row", "#result", prepend_row_data);
+    await append_template("default-row", "#result", append_row_data);
+    await html_template("content-element", "#contents", flexible_row_contents);
+}
+
 ```
-*Note: this can quickly devolve into [callback hell](http://callbackhell.com/) (and arguably it already has in the above example...). This is already alleviated as much as possible by the `.then`s in the helper functions. There doesn't seem to be another way to force "synchronous" sequential execution of multiple function calls. If there is a cleaner way, please let me know!*
+*Note: as of 08/01/2020, `html_template`, `prepend_template`, and `append_template` were modified to return `Promise`s, therefore avoiding any chances of the [callback hell](http://callbackhell.com/) typical of older asynchronous Javascript. (I didn't initially understand `async`/`await` when creating this repository... whoops! It's worth noting, though, that `Promise`s aren't supported at all in IE, if that's a necessary consideration for the use case.*
+
 
 As a result of the above, the four specified templates will always render in the given order, as seen in the console output below. Crucially, this order matters because the results of rendering the `content-element` template are appended to `#contents`, which is found in the `flexible-row` template.
 
@@ -84,7 +86,7 @@ Refer to the code (in particular [`app.py`](app.py) and [`static/js/script.js`](
 
 ## Sources
 
-I'm very new to working with Flask, in particular communicating information between two different program languages using JSON, so the following two repositories were very helpful for me while figuring out this solution.
+As of creating this repository I was very new to working with Flask, in particular communicating information between two different program languages using JSON, so the following two repositories were very helpful for me while figuring out this solution.
 
 - [python-flask-with-javascript](https://github.com/jitsejan/python-flask-with-javascript)
 - [talking-between-python-and-js](https://github.com/healeycodes/talking-between-python-and-js)

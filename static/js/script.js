@@ -5,11 +5,10 @@
  * @param {string} selector The CSS selector for the target element
  * @param {*} data The data on which the template will be rendered (can be
  * either a single Object or an Array of Objects)
- * @param {*} continuation (optional) The next function to run (useful for when
- * specific renderings depend on each other and must occur in order)
  */
-function html_template(id, selector, data, continuation) {
-    fetch('/get-template/' + id)
+function html_template(id, selector, data) {
+    return new Promise(resolve => {
+        fetch('/get-template/' + id)
         .then(function (response) {
             return response.json();
         }).then(function (json) {
@@ -17,7 +16,9 @@ function html_template(id, selector, data, continuation) {
             var output = template.render(data);
             $(selector).html(output);
             console.log("loaded " + id + " and set HTML of " + selector);
-        }).then(continuation);
+            resolve();
+        });
+    });
 }
 
 /**
@@ -27,11 +28,10 @@ function html_template(id, selector, data, continuation) {
  * @param {string} selector The CSS selector for the target element
  * @param {*} data The data on which the template will be rendered (can be
  * either a single Object or an Array of Objects)
- * @param {*} continuation (optional) The next function to run (useful for when
- * specific renderings depend on each other and must occur in order)
  */
-function append_template(id, selector, data, continuation) {
-    fetch('/get-template/' + id)
+function append_template(id, selector, data) {
+    return new Promise(resolve => {
+        fetch('/get-template/' + id)
         .then(function (response) {
             return response.json();
         }).then(function (json) {
@@ -39,7 +39,9 @@ function append_template(id, selector, data, continuation) {
             var output = template.render(data);
             $(selector).append(output);
             console.log("loaded " + id + " and appended to " + selector);
-        }).then(continuation);
+            resolve();
+        });
+    });
 }
 
 /**
@@ -49,11 +51,10 @@ function append_template(id, selector, data, continuation) {
  * @param {string} selector The CSS selector for the target element
  * @param {*} data The data on which the template will be rendered (can be
  * either a single Object or an Array of Objects)
- * @param {*} continuation (optional) The next function to run (useful for when
- * specific renderings depend on each other and must occur in order)
  */
-function prepend_template(id, selector, data, continuation) {
-    fetch('/get-template/' + id)
+function prepend_template(id, selector, data) {
+    return new Promise(resolve => {
+        fetch('/get-template/' + id)
         .then(function (response) {
             return response.json();
         }).then(function (json) {
@@ -61,13 +62,15 @@ function prepend_template(id, selector, data, continuation) {
             var output = template.render(data);
             $(selector).prepend(output);
             console.log("loaded " + id + " and prepended to " + selector);
-        }).then(continuation);
+            resolve();
+        });
+    });
 }
 
 /**
  * Renders all the elements onto index.html for this demonstration.
  */
-function show_page() {
+async function show_page() {
     // Data is passed into JsRender templates as JSON objects.
     var prepend_row_data = {
         "title": "top row",
@@ -99,17 +102,10 @@ function show_page() {
      * Note the usage of continuations to enforce the order in which elements
      * are loaded onto the page.
      */
-    html_template("flexible-row", "#result", html_flexible_row_data, () => {
-        prepend_template("default-row", "#result", prepend_row_data, () => {
-            append_template("default-row", "#result", append_row_data, () => {
-                /***
-                 * Note that the continuation parameter is optional, and this
-                 * call to html_template has no continuation.
-                 */
-                html_template("content-element", "#contents", flexible_row_contents);
-            });
-        });
-    });
+    await html_template("flexible-row", "#result", html_flexible_row_data);
+    await prepend_template("default-row", "#result", prepend_row_data);
+    await append_template("default-row", "#result", append_row_data);
+    await html_template("content-element", "#contents", flexible_row_contents);
 }
 
 // Runs the above function upon the completed loading of index.html.
