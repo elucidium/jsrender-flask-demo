@@ -99,8 +99,6 @@ async function show_page() {
     ]
     /***
      * Uses the first three helper functions in this file to populate the page.
-     * Note the usage of continuations to enforce the order in which elements
-     * are loaded onto the page.
      */
     await html_template("flexible-row", "#result", html_flexible_row_data);
     await prepend_template("default-row", "#result", prepend_row_data);
